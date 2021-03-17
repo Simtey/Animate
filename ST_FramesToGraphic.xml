@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dialog buttons="accept, cancel" title="Frames to Graphic">
+	<vbox>
+		<label value="Symbol Name " control="symbolName" />
+		<textbox size="40" maxlength="120" id="symbolName" required="false" prompt="Enter name of new symbol" />
+	</vbox>
+	<vbox>
+		<checkbox id="KeepOldFrames" checked="false" label="Keep original frames" />
+	</vbox>
+</dialog>
