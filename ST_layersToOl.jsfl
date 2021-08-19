@@ -1,10 +1,19 @@
+/*
+- pourquoi le delete marche ? selection --> probleme si dernier calque = selectionné = supprimé
+- Si plusieurs frames dans la tl principale (ex cassé à 2 ) faire le swap sur chaque frame
+- si currentFrame = vide sur un calque il n'est pas présent / supprimé ?
+- peut être améliorer le prompt
+
+*/
+
+
 an.outputPanel.clear();
 
 var doc = an.getDocumentDOM();
 var tl = doc.getTimeline();
 var symbolName = prompt("Symbol name");
 
-	if (symbolName !== null) {
+	//if (symbolName !== null) {
 
 		if (doc.library.itemExists(symbolName)) {
 			alert('This symbol already exists, please chose another name')
@@ -12,7 +21,7 @@ var symbolName = prompt("Symbol name");
 
 	tl.copyLayers(); // copie les calques selectionnés
 
-var layerArray = tl.getSelectedLayers(); // detecter les layers selectionnés
+// var layerArray = tl.getSelectedLayers(); // detecter les layers selectionnés
 var selFrames = tl.getSelectedFrames(); //detecte les frames selectionnées
 
 	for (n=0; n<selFrames.length; n+=3) {
@@ -55,4 +64,4 @@ var layers = tl3.layers;
 	tl3.deleteLayer();
 	doc.exitEditMode();	
 	}
-}
+//}
