@@ -20,7 +20,6 @@ var selFrames = tl.getSelectedFrames(); // on sauvegarde les calques selectionn�
 var NumLayer = tl.layerCount;
 var layToDelete = new Array;
 
-	getFramesToDelete(); // get the array of the non Ol frames
 	LaySelectedToGuide(); // on prend les calques selectionnés et on les met en guide (fonction)
 	doc.exitEditMode(); // on va dans la timeline principale
 	
@@ -48,24 +47,18 @@ var selectName = itemSelected.name ; // path du graphique dans la bibliotheque
 		}	
 }
 			
-function getFramesToDelete() {
+function LaySelectedToGuide() {
 	for (i=0; i < NumLayer; i++) {
-		if ((selLayers.indexOf(i) == -1 )) {	 // Si le layer courant est dans l'array OL 
-			layToDelete.push(i);
+		if ((selLayers.indexOf(i) !== -1 )) {	 // Si le layer courant est un OL (array)
+			tl.layers[i].layerType = "guide";	// on le met en guide
+		}else{
+			layToDelete.push(i); // sinon on crée une array des layers non OL			
 		}
 	}
 }		
 			
-function LaySelectedToGuide() {
-	for (n=0; n<selFrames.length; n+=3) {
-		layerNum=selFrames[n];
-		tl.layers[layerNum].layerType = "guide";
-	}		
-}
-
 function NextKf() { /// ne marche pas encore
 
-    var doc = fl.getDocumentDOM();
     var tlx = doc.getTimeline();
     var curLayer = tlx.currentLayer;
     var curFrame = tlx.currentFrame;
