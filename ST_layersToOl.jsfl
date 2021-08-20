@@ -16,6 +16,10 @@ var symbolName = prompt("Symbol name"); // demande un nom de graphique à l'util
 		} else {
 var selLayers = tl.getSelectedLayers();
 var selFrames = tl.getSelectedFrames(); // on sauvegarde les calques selectionnés (array)
+var NumLayer = tl.layerCount;
+var layToDelete = new Array;
+
+	getFramesToDelete(); // get the array of the non Ol frames
 	LaySelectedToGuide(); // on prend les calques selectionnés et on les met en guide (fonction)
 	doc.exitEditMode(); // on va dans la timeline principale
 	
@@ -37,14 +41,19 @@ var selectName = itemSelected.name ; // path du graphique dans la bibliotheque
 	doc.swapElement(symbolName); //inclure dans NextKf // on interverti le symbole sur la bonne tl
 	
 	doc.enterEditMode(); // on entre dans ce nouveau symbole
- deleteNonOl();
-//	LaySelectedToNormal(); // on remet les calques en Normal (fonction)
-
-/// doc.exitEditMode();
+	deleteNonOl();
+	LaySelectedToNormal(); // on remet les calques en Normal (fonction)
+	doc.exitEditMode();
 	
 }
 			
-			
+function getFramesToDelete() {
+	for (i=0; i < NumLayer; i++) {
+		if ((selLayers.indexOf(i) == -1 )) {	 // Si le layer courant est dans l'array OL 
+			layToDelete.push(i);
+		}
+	}
+}		
 			
 function LaySelectedToGuide() {
 	for (n=0; n<selFrames.length; n+=3) {
@@ -98,10 +107,8 @@ function LaySelectedToNormal() {
 
 function deleteNonOl() {
 	var tl3 = doc.getTimeline();
-	for each(var layToKeep in selLayers){
-	//tl3.setSelectedLayers(layToKeep,false);
-tl3.deleteLayer(); /// trouver le moyen d'inverser la selection
+	for each(var k in layToDelete){
+		tl3.setSelectedLayers(k,false);
 	}
-	//setSelectedFrames(0,0);
+	tl3.deleteLayer();
 }
-
