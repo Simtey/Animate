@@ -11,6 +11,7 @@ var doc = an.getDocumentDOM();
 var tl = doc.getTimeline();
 var symbolName = prompt("Symbol name"); // demande un nom de graphique à l'utilisateur
 
+	if (symbolName != null) {
 		if (doc.library.itemExists(symbolName)) { // le nom ne doit pas exister dans la bibli
 			alert('This symbol already exists, please chose another name')
 		} else {
@@ -44,7 +45,7 @@ var selectName = itemSelected.name ; // path du graphique dans la bibliotheque
 	deleteNonOl();
 	LaySelectedToNormal(); // on remet les calques en Normal (fonction)
 	doc.exitEditMode();
-	
+		}	
 }
 			
 function getFramesToDelete() {
