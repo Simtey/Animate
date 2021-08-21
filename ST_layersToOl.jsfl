@@ -1,5 +1,5 @@
 /*ST_layersToOl v1 - Simon Thery - 2021
-Places the selected layers nested in a symbol over the ongoing symbol */
+Nest the selected layersin a symbol over the ongoing symbol */
 
 var doc = an.getDocumentDOM();
 var tl = doc.getTimeline();
