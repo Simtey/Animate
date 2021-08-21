@@ -1,6 +1,5 @@
 /*ST_layersToOl v1 - Simon Thery - 2021
 Nest the selected layers in a symbol over the ongoing symbol */
-
 var doc = an.getDocumentDOM();
 var tl = doc.getTimeline();
 var symbolName = prompt("Symbol name"); // Ask for a graphic name for the new symbol / layer
@@ -31,8 +30,8 @@ if (symbolName != null) { // Abort if cancel or no name provided
         DeleteNonOl();
         LaySelectedToNormal();
         doc.exitEditMode(); // Come back in the previous timeline
-		tl2.currentFrame = 0; // select the first frame
-		tl2.setSelectedFrames(0,0);
+        tl2.currentFrame = 0; // select the first frame
+        tl2.setSelectedFrames(0, 0);
     }
 }
 
@@ -58,25 +57,26 @@ function SwapSymbols() { // Swap the new symbol on all the keys on the new layer
         tl2.currentFrame = currentKf;
         tl2.setSelectedFrames(currentKf, currentKf + 1);
         doc.selection[0];
-	if(doc.selection[0] !== undefined) {
-        doc.swapElement(symbolName);
-		}
+        if (doc.selection[0] !== undefined) {
+            doc.swapElement(symbolName);
+        }
     }
 }
 
 function DeleteNonOl() { // delete the non OL layers in the new symbol
     var tl3 = doc.getTimeline();
-    for each(var k in layToDelete) {
-        tl3.setSelectedLayers(k, false);
+    if (layToDelete.count < NumLayer) { // bugfix if all layers selected
+        for each(var k in layToDelete) {
+            tl3.setSelectedLayers(k, false);
+        }
+        tl3.deleteLayer();
     }
-    tl3.deleteLayer();
 }
 
 function LaySelectedToNormal() { // put back the guided layers as normal
     var tl3 = doc.getTimeline();
     var NumLayer = tl3.layerCount;
     var layers = tl3.layers;
-
     for (var i = 0; i < NumLayer; i++) {
         var currentLayer = layers[i];
         currentLayer.layerType = 'normal';
