@@ -1,108 +1,84 @@
-an.outputPanel.clear();
-/*
-- Si plusieurs frames dans la tl principale (ex cassé à 2 ) faire le swap sur chaque frame
-- peut être améliorer le prompt
-
-*/
-
-
+/*ST_layersToOl v1 - Simon Thery - 2021
+Places the selected layers nested in a symbol over the ongoing symbol */
 
 var doc = an.getDocumentDOM();
 var tl = doc.getTimeline();
-var symbolName = prompt("Symbol name"); // demande un nom de graphique à l'utilisateur
+var symbolName = prompt("Symbol name"); // Ask for a graphic name for new symbol / layer
 
-	if (symbolName != null) {
-		if (doc.library.itemExists(symbolName)) { // le nom ne doit pas exister dans la bibli
-			alert('This symbol already exists, please chose another name')
-		} else {
-var selLayers = tl.getSelectedLayers();
-var selFrames = tl.getSelectedFrames(); // on sauvegarde les calques selectionnés (array)
-var NumLayer = tl.layerCount;
-var layToDelete = new Array;
-
-	LaySelectedToGuide(); // on prend les calques selectionnés et on les met en guide (fonction)
-	doc.exitEditMode(); // on va dans la timeline principale
-	
-var tl2 = doc.getTimeline();
-var curLayer = tl2.currentLayer;
-	
-	tl2.duplicateLayers(); // on duplique le calque 
-	tl2.setLayerProperty("name", symbolName) // et on change son nom
-	
-var itemSelected = doc.selection[0].libraryItem ; // selection du graphique
-var selectName = itemSelected.name ; // path du graphique dans la bibliotheque
-
-	doc.library.duplicateItem(selectName); // on duplique le symbole dans la biblio
-	doc.library.renameItem(symbolName); // on rename ce symbole avec le nom choisi par le user
-
-/// NextKf(); // si clé sur la tl principale
-	tl2.setSelectedFrames(0,0);
-	doc.selection[0]; //inclure dans NextKf
-	doc.swapElement(symbolName); //inclure dans NextKf // on interverti le symbole sur la bonne tl
-	
-	doc.enterEditMode(); // on entre dans ce nouveau symbole
-	deleteNonOl();
-	LaySelectedToNormal(); // on remet les calques en Normal (fonction)
-	doc.exitEditMode();
-		}	
-}
-			
-function LaySelectedToGuide() {
-	for (i=0; i < NumLayer; i++) {
-		if ((selLayers.indexOf(i) !== -1 )) {	 // Si le layer courant est un OL (array)
-			tl.layers[i].layerType = "guide";	// on le met en guide
-		}else{
-			layToDelete.push(i); // sinon on crée une array des layers non OL			
-		}
-	}
-}		
-			
-function NextKf() { /// ne marche pas encore
-
-    var tlx = doc.getTimeline();
-    var curLayer = tlx.currentLayer;
-    var curFrame = tlx.currentFrame;
-    var frameArray = fl.getDocumentDOM().getTimeline().layers[curLayer].frames;
-    var n = frameArray.length;
-	an.trace(curFrame);
-    var nextKeyFrame ;
-    if (n > 1) {
-        for (var i = curFrame; i <= n; i++) {
-            if (i == frameArray[i].startFrame) {
-                nextKeyFrame = i;
-			an.trace(nextKeyFrame);	
-                break;
-            }
-        }
-        tlx.currentFrame = nextKeyFrame - curFrame;
-        tlx.setSelectedFrames(nextKeyFrame, nextKeyFrame);
-		doc.selection[0];
-		doc.swapElement(symbolName);
-
+if (symbolName != null) { // Abort if cancel or no name provided
+    if (doc.library.itemExists(symbolName)) { // check if the symbol name already exists
+        alert('This symbol already exists, please chose another name')
     } else {
-        tlx.setSelectedFrames(curFrame, curFrame);
-        tlx.currentFrame = curFrame;
-		doc.selection[0];
-		doc.swapElement(symbolName);
+        var selLayers = tl.getSelectedLayers();
+        var NumLayer = tl.layerCount;
+        var layToDelete = new Array;
+
+        LaySelectedToGuide();
+        doc.exitEditMode();
+
+        var tl2 = doc.getTimeline(); // go in the previous timeline
+
+        tl2.duplicateLayers(); // duplicate the current layer
+        tl2.setLayerProperty("name", symbolName) // change the layer name
+
+        var itemSelected = doc.selection[0].libraryItem; // select the in the library
+        var selectName = itemSelected.name; // and get its name / path
+
+        doc.library.duplicateItem(selectName); // duplicate the symbol in the library
+        doc.library.renameItem(symbolName); // Rename this new symbol
+
+        swapSymbols();
+
+        doc.enterEditMode(); // enter in the new symbol
+        deleteNonOl();
+        LaySelectedToNormal();
+        doc.exitEditMode(); // Come back in the previous timeline
+		tl2.currentFrame = 0; // select the first frame
+		tl2.setSelectedFrames(0,0);
     }
 }
 
-function LaySelectedToNormal() {
-	
-	var tl3 = doc.getTimeline();
-	var NumLayer = tl3.layerCount;
-	var layers = tl3.layers;
-
-	for (var i=0; i < NumLayer; i++) {
-		var currentLayer = layers [i];
-	currentLayer.layerType = 'normal';
-	}
+function LaySelectedToGuide() { //turn the selected layers as guide
+    for (i = 0; i < NumLayer; i++) {
+        if ((selLayers.indexOf(i) !== -1)) {
+            tl.layers[i].layerType = "guide";
+        } else {
+            layToDelete.push(i); // Create an array of the non-selected layers
+        }
+    }
 }
 
-function deleteNonOl() {
-	var tl3 = doc.getTimeline();
-	for each(var k in layToDelete){
-		tl3.setSelectedLayers(k,false);
-	}
-	tl3.deleteLayer();
+function swapSymbols() { // Swap the new symbol on all the keys on the new layer
+    var curLayer = tl2.currentLayer;
+    var frameArray = tl2.layers[curLayer].frames;
+    var tlLength = frameArray.length;
+    var currentKf;
+    for (i = 0; i < tlLength; i++) {
+        if (i == frameArray[i].startFrame) {
+            currentKf = i;
+        }
+        tl2.currentFrame = currentKf;
+        tl2.setSelectedFrames(currentKf, currentKf + 1);
+        doc.selection[0];
+        doc.swapElement(symbolName);
+    }
+}
+
+function deleteNonOl() { // delete the non OL layers in the new symbol
+    var tl3 = doc.getTimeline();
+    for each(var k in layToDelete) {
+        tl3.setSelectedLayers(k, false);
+    }
+    tl3.deleteLayer();
+}
+
+function LaySelectedToNormal() { // put back the guided layers as normal
+    var tl3 = doc.getTimeline();
+    var NumLayer = tl3.layerCount;
+    var layers = tl3.layers;
+
+    for (var i = 0; i < NumLayer; i++) {
+        var currentLayer = layers[i];
+        currentLayer.layerType = 'normal';
+    }
 }
