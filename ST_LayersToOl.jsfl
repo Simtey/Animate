@@ -3,7 +3,7 @@ Nest the selected layers in a symbol over the ongoing symbol */
 
 var doc = an.getDocumentDOM();
 var tl = doc.getTimeline();
-var symbolName = prompt("Symbol name"); // Ask for a graphic name for new symbol / layer
+var symbolName = prompt("Symbol name"); // Ask for a graphic name for the new symbol / layer
 
 if (symbolName != null) { // Abort if cancel or no name provided
     if (doc.library.itemExists(symbolName)) { // check if the symbol name already exists
@@ -21,14 +21,14 @@ if (symbolName != null) { // Abort if cancel or no name provided
         tl2.duplicateLayers(); // duplicate the current layer
         tl2.setLayerProperty("name", symbolName) // change the layer name
 
-        var itemSelected = doc.selection[0].libraryItem; // select the in the library
+        var itemSelected = doc.selection[0].libraryItem; // select the symbol in the library
         var selectName = itemSelected.name; // and get its name / path
 
         doc.library.duplicateItem(selectName); // duplicate the symbol in the library
         doc.library.renameItem(symbolName); // Rename this new symbol
-        swapSymbols();
+        SwapSymbols();
         doc.enterEditMode(); // enter in the new symbol
-        deleteNonOl();
+        DeleteNonOl();
         LaySelectedToNormal();
         doc.exitEditMode(); // Come back in the previous timeline
 		tl2.currentFrame = 0; // select the first frame
@@ -46,7 +46,7 @@ function LaySelectedToGuide() { //turn the selected layers as guide
     }
 }
 
-function swapSymbols() { // Swap the new symbol on all the keys on the new layer
+function SwapSymbols() { // Swap the new symbol on all the keys on the new layer
     var curLayer = tl2.currentLayer;
     var frameArray = tl2.layers[curLayer].frames;
     var tlLength = frameArray.length;
@@ -64,7 +64,7 @@ function swapSymbols() { // Swap the new symbol on all the keys on the new layer
     }
 }
 
-function deleteNonOl() { // delete the non OL layers in the new symbol
+function DeleteNonOl() { // delete the non OL layers in the new symbol
     var tl3 = doc.getTimeline();
     for each(var k in layToDelete) {
         tl3.setSelectedLayers(k, false);
