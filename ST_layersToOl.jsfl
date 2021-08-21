@@ -26,9 +26,7 @@ if (symbolName != null) { // Abort if cancel or no name provided
 
         doc.library.duplicateItem(selectName); // duplicate the symbol in the library
         doc.library.renameItem(symbolName); // Rename this new symbol
-
         swapSymbols();
-
         doc.enterEditMode(); // enter in the new symbol
         deleteNonOl();
         LaySelectedToNormal();
@@ -60,7 +58,9 @@ function swapSymbols() { // Swap the new symbol on all the keys on the new layer
         tl2.currentFrame = currentKf;
         tl2.setSelectedFrames(currentKf, currentKf + 1);
         doc.selection[0];
+	if(doc.selection[0] !== undefined) {
         doc.swapElement(symbolName);
+		}
     }
 }
 
