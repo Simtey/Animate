@@ -10,7 +10,7 @@ if (symbolName != null) { // Abort if cancel or no name provided
         alert('This symbol already exists, please chose another name')
     } else {
         var selLayers = tl.getSelectedLayers();
-        var NumLayer = tl.layerCount;
+        var numLayer = tl.layerCount;
         var layToDelete = new Array;
 
         LaySelectedToGuide();
@@ -31,13 +31,13 @@ if (symbolName != null) { // Abort if cancel or no name provided
         DeleteNonOl();
         LaySelectedToNormal();
         doc.exitEditMode(); // Come back in the previous timeline
-		tl2.currentFrame = 0; // select the first frame
-		tl2.setSelectedFrames(0,0);
+        tl2.currentFrame = 0; // select the first frame
+        tl2.setSelectedFrames(0, 0);
     }
 }
 
 function LaySelectedToGuide() { //turn the selected layers as guide
-    for (i = 0; i < NumLayer; i++) {
+    for (i = 0; i < numLayer; i++) {
         if ((selLayers.indexOf(i) !== -1)) {
             tl.layers[i].layerType = "guide";
         } else {
@@ -51,6 +51,7 @@ function SwapSymbols() { // Swap the new symbol on all the keys on the new layer
     var frameArray = tl2.layers[curLayer].frames;
     var tlLength = frameArray.length;
     var currentKf;
+	
     for (i = 0; i < tlLength; i++) {
         if (i == frameArray[i].startFrame) {
             currentKf = i;
@@ -58,26 +59,29 @@ function SwapSymbols() { // Swap the new symbol on all the keys on the new layer
         tl2.currentFrame = currentKf;
         tl2.setSelectedFrames(currentKf, currentKf + 1);
         doc.selection[0];
-	if(doc.selection[0] !== undefined) {
-        doc.swapElement(symbolName);
-		}
+        if (doc.selection[0] !== undefined) {
+            doc.swapElement(symbolName);
+        }
     }
 }
 
 function DeleteNonOl() { // delete the non OL layers in the new symbol
     var tl3 = doc.getTimeline();
-    for each(var k in layToDelete) {
-        tl3.setSelectedLayers(k, false);
+
+    if (selLayers.length < numLayer) { // bugfix if all layers selected
+        for each(var k in layToDelete) {
+            tl3.setSelectedLayers(k, false);
+        }
+        tl3.deleteLayer();
     }
-    tl3.deleteLayer();
 }
 
 function LaySelectedToNormal() { // put back the guided layers as normal
     var tl3 = doc.getTimeline();
-    var NumLayer = tl3.layerCount;
+    var numLayer = tl3.layerCount;
     var layers = tl3.layers;
 
-    for (var i = 0; i < NumLayer; i++) {
+    for (var i = 0; i < numLayer; i++) {
         var currentLayer = layers[i];
         currentLayer.layerType = 'normal';
     }
