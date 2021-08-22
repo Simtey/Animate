@@ -63,6 +63,17 @@ function SwapSymbols() { // Swap the new symbol on all the keys on the new layer
             doc.swapElement(symbolName);
         }
     }
+	for (i = 0; i < tlLength; i++) { // loop again to be sure not to be on a blank Kf
+        if (i == frameArray[i].startFrame) {
+            currentKf = i;
+        }
+        tl2.currentFrame = currentKf;
+        tl2.setSelectedFrames(currentKf, currentKf + 1);
+        doc.selection[0];
+        if (doc.selection[0] !== undefined) {
+            break;
+        }
+    }
 }
 
 function DeleteNonOl() { // delete the non OL layers in the new symbol
