@@ -1,6 +1,7 @@
 /*ST_layersToOl v1 - Simon Thery - 2021
-Nest the selected layers in a symbol over the ongoing symbol */
-
+Nest the selected layers in a symbol over the ongoing symbol 
+--> to fix si mauvais symbole selectionné dans la bibliotheque*/
+an.outputPanel.clear();
 var doc = an.getDocumentDOM();
 var tl = doc.getTimeline();
 var symbolName = prompt("Symbol name"); // Ask for a graphic name for the new symbol / layer
@@ -30,8 +31,8 @@ if (symbolName != null) { // Abort if cancel or no name provided
         doc.library.renameItem(symbolName); // Rename this new symbol
         SwapSymbols();
         doc.enterEditMode(); // enter in the new symbol
+        LayToNormal();
         DeleteNonOl();
-        LaySelectedToNormal();
         doc.exitEditMode(); // Come back in the previous timeline
         tl2.currentFrame = 0; // select the first frame
         tl2.setSelectedFrames(0, 0);
@@ -40,13 +41,17 @@ if (symbolName != null) { // Abort if cancel or no name provided
 
 function LaySelectedToGuide() { //turn the selected layers as guide
     var layers = tl.layers;
+    var length2 = layers.length;
+
+    for (i = 0; i < length2; i++) { // We restore the layer types
+        layer = layers[i];
+        originalTypes[i] = layer.layerType;
+        originalParents[i] = layer.parentLayer;
+    }
+
     for (i = 0; i < numLayer; i++) {
         if ((selLayers.indexOf(i) !== -1)) {
-            originalTypes[i] = layers[i].layerType; //we save the layer type for later
-            originalParents[i] = layers[i].parentLayer;
-            if (tl.layers[i].layerType != "folder") {
-                tl.layers[i].layerType = "guide";
-            }
+            tl.layers[i].layerType = "guide";
         } else {
             layToDelete.push(i); // Create an array of the non-selected layers
         }
@@ -83,24 +88,27 @@ function SwapSymbols() { // Swap the new symbol on all the keys on the new layer
     }
 }
 
-function DeleteNonOl() { // delete the non OL layers in the new symbol
-    var tl3 = doc.getTimeline();
-
-    if (selLayers.length < numLayer) { // bugfix if all layers selected
-        for each(var k in layToDelete) {
-            tl3.setSelectedLayers(k, false);
-        }
-        tl3.deleteLayer();
-    }
-}
-
-function LaySelectedToNormal() { // put back the guided layers as normal
+function LayToNormal() { // put back the guided layers as normal
     var tl3 = doc.getTimeline();
     var numLayer = tl3.layerCount;
     var layers = tl3.layers;
 
-    for (var i = 0; i < numLayer; i++) {
-        layers[i].layerType = originalTypes[i]; // we turn back the layers to their originaltypes
-        layers[i].parentLayer = originalParents[i];
+    var layers = tl3.layers;
+    var length2 = layers.length;
+
+    for (i = 0; i < length2; i++) { // We restore the layer types
+        layer = layers[i];
+        layer.layerType = originalTypes[i];
+        layer.parentLayer = originalParents[i];
+    }
+}
+
+function DeleteNonOl() { // delete the non OL layers in the new symbol
+    var tl3 = doc.getTimeline();
+    if (selLayers.length !== numLayer) { // bugfix if all layers selected
+        for each(var k in layToDelete) {
+            tl3.setSelectedLayers(k, false);
+        }
+        doc.getTimeline().deleteLayer();
     }
 }
