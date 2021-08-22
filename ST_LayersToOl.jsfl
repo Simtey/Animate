@@ -12,6 +12,8 @@ if (symbolName != null) { // Abort if cancel or no name provided
         var selLayers = tl.getSelectedLayers();
         var numLayer = tl.layerCount;
         var layToDelete = new Array;
+        var originalTypes = new Array();
+        var originalParents = new Array();
 
         LaySelectedToGuide();
         doc.exitEditMode();
@@ -37,9 +39,14 @@ if (symbolName != null) { // Abort if cancel or no name provided
 }
 
 function LaySelectedToGuide() { //turn the selected layers as guide
+    var layers = tl.layers;
     for (i = 0; i < numLayer; i++) {
         if ((selLayers.indexOf(i) !== -1)) {
-            tl.layers[i].layerType = "guide";
+            originalTypes[i] = layers[i].layerType; //we save the layer type for later
+            originalParents[i] = layers[i].parentLayer;
+            if (tl.layers[i].layerType != "folder") {
+                tl.layers[i].layerType = "guide";
+            }
         } else {
             layToDelete.push(i); // Create an array of the non-selected layers
         }
@@ -51,7 +58,7 @@ function SwapSymbols() { // Swap the new symbol on all the keys on the new layer
     var frameArray = tl2.layers[curLayer].frames;
     var tlLength = frameArray.length;
     var currentKf;
-	
+
     for (i = 0; i < tlLength; i++) {
         if (i == frameArray[i].startFrame) {
             currentKf = i;
@@ -63,7 +70,7 @@ function SwapSymbols() { // Swap the new symbol on all the keys on the new layer
             doc.swapElement(symbolName);
         }
     }
-	for (i = 0; i < tlLength; i++) { // loop again to be sure not to be on a blank Kf
+    for (i = 0; i < tlLength; i++) { // loop again to be sure not to be on a blank Kf
         if (i == frameArray[i].startFrame) {
             currentKf = i;
         }
@@ -93,7 +100,7 @@ function LaySelectedToNormal() { // put back the guided layers as normal
     var layers = tl3.layers;
 
     for (var i = 0; i < numLayer; i++) {
-        var currentLayer = layers[i];
-        currentLayer.layerType = 'normal';
+        layers[i].layerType = originalTypes[i]; // we turn back the layers to their originaltypes
+        layers[i].parentLayer = originalParents[i];
     }
 }
