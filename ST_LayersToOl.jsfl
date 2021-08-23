@@ -29,6 +29,8 @@ if (symbolName != null) { // Abort if cancel or no name provided
 
         doc.library.duplicateItem(selectName); // duplicate the symbol in the library
         doc.library.renameItem(symbolName); // Rename this new symbol
+		var libraryItemsSelected = doc.library.getSelectedItems();
+		var item2 = libraryItemsSelected[0].name ;
         SwapSymbols();
         doc.enterEditMode(); // enter in the new symbol
         LayToNormal();
@@ -72,7 +74,7 @@ function SwapSymbols() { // Swap the new symbol on all the keys on the new layer
         tl2.setSelectedFrames(currentKf, currentKf + 1);
         doc.selection[0];
         if (doc.selection[0] !== undefined) {
-            doc.swapElement(symbolName);
+            doc.swapElement(item2);
         }
     }
     for (i = 0; i < tlLength; i++) { // loop again to be sure not to be on a blank Kf
