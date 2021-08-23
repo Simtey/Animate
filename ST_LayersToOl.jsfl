@@ -1,9 +1,13 @@
 /*ST_layersToOl v1 - Simon Thery - 2021
-Nest the selected layers in a symbol over the ongoing symbol  */
+Nest the selected layers in a symbol over the ongoing symbol 
+pn si dans un dossier le delete layer ne marche pas bien --> revenir à l'idée de supprimer avant de remettre les calques en place
+--> originaltype seulement pour les calques selectionnés
+ */
 
 an.outputPanel.clear();
 var doc = an.getDocumentDOM();
 var tl = doc.getTimeline();
+// var item0 = tl.libraryItem.name; --> soluce Molang
 var symbolName = prompt("Symbol name"); // Ask for a graphic name for the new symbol / layer
 
 if (symbolName != null) { // Abort if cancel or no name provided
@@ -35,9 +39,10 @@ if (symbolName != null) { // Abort if cancel or no name provided
         doc.library.editItem(item2); // enter in the new symbol
         LayToNormal();
         DeleteNonOl();
-	    an.getDocumentDOM().exitEditMode(); // Come back in the previous timeline
-        tl2.currentFrame = 0; // select the first frame
-        tl2.setSelectedFrames(0, 0);
+	    // doc.library.editItem(item0); // soluce Molang
+		an.getDocumentDOM().exitEditMode();
+       //tl2.currentFrame = 0; // select the first frame
+        //tl2.setSelectedFrames(0, 0);
     }
 }
 
@@ -100,16 +105,19 @@ function LayToNormal() { // put back the guided layers as normal
 
     for (i = 0; i < length2; i++) { // We restore the layer types
         layer = layers[i];
+
+	//	if (layer.layerType !== "folder") {
         layer.layerType = originalTypes[i];
         layer.parentLayer = originalParents[i];
-    }
+		//}
+	}
 }
 
 function DeleteNonOl() { // delete the non OL layers in the new symbol
-    var tl3 = doc.getTimeline();
+			//doc.getTimeline().setSelectedLayers(selLayers[0], true); // bugfix so nothing is selected before the loop
     if (selLayers.length !== numLayer) { // bugfix if all layers selected
         for each(var k in layToDelete) {
-            tl3.setSelectedLayers(k, false);
+            doc.getTimeline().setSelectedLayers(k, false);
         }
         doc.getTimeline().deleteLayer();
     }
