@@ -1,6 +1,6 @@
 /*ST_layersToOl v1 - Simon Thery - 2021
-Nest the selected layers in a symbol over the ongoing symbol 
---> to fix si mauvais symbole selectionné dans la bibliotheque*/
+Nest the selected layers in a symbol over the ongoing symbol  */
+
 an.outputPanel.clear();
 var doc = an.getDocumentDOM();
 var tl = doc.getTimeline();
@@ -23,7 +23,7 @@ if (symbolName != null) { // Abort if cancel or no name provided
 
         tl2.duplicateLayers(); // duplicate the current layer
         tl2.setLayerProperty("name", symbolName) // change the layer name
-
+		doc.library.selectNone(); //bugfix if an item is already selected in the library
         var itemSelected = doc.selection[0].libraryItem; // select the symbol in the library
         var selectName = itemSelected.name; // and get its name / path
 
@@ -32,10 +32,10 @@ if (symbolName != null) { // Abort if cancel or no name provided
 		var libraryItemsSelected = doc.library.getSelectedItems();
 		var item2 = libraryItemsSelected[0].name ;
         SwapSymbols();
-        doc.enterEditMode(); // enter in the new symbol
+        doc.library.editItem(item2); // enter in the new symbol
         LayToNormal();
         DeleteNonOl();
-        doc.exitEditMode(); // Come back in the previous timeline
+	    an.getDocumentDOM().exitEditMode(); // Come back in the previous timeline
         tl2.currentFrame = 0; // select the first frame
         tl2.setSelectedFrames(0, 0);
     }
