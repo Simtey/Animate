@@ -1,8 +1,5 @@
 /*ST_layersToOl v1 - Simon Thery - 2021
-Nest the selected layers in a symbol over the ongoing symbol 
-pn si dans un dossier le delete layer ne marche pas bien --> revenir à l'idée de supprimer avant de remettre les calques en place
---> originaltype seulement pour les calques selectionnés
- */
+Nest the selected layers in a symbol over the ongoing symbol */
 
 an.outputPanel.clear();
 var doc = an.getDocumentDOM();
@@ -27,30 +24,32 @@ if (symbolName != null) { // Abort if cancel or no name provided
 
         tl2.duplicateLayers(); // duplicate the current layer
         tl2.setLayerProperty("name", symbolName) // change the layer name
-		doc.library.selectNone(); //bugfix if an item is already selected in the library
+        doc.library.selectNone(); //bugfix if an item is already selected in the library
+		
         var itemSelected = doc.selection[0].libraryItem; // select the symbol in the library
         var selectName = itemSelected.name; // and get its name / path
 
         doc.library.duplicateItem(selectName); // duplicate the symbol in the library
         doc.library.renameItem(symbolName); // Rename this new symbol
-		var libraryItemsSelected = doc.library.getSelectedItems();
-		var item2 = libraryItemsSelected[0].name ;
+		
+        var libraryItemsSelected = doc.library.getSelectedItems();
+        var item2 = libraryItemsSelected[0].name;
+		
         SwapSymbols();
         doc.library.editItem(item2); // enter in the new symbol
-        LayToNormal();
-        DeleteNonOl();
-	    // doc.library.editItem(item0); // soluce Molang
-		an.getDocumentDOM().exitEditMode();
-       //tl2.currentFrame = 0; // select the first frame
+        OnlyOls();
+        // doc.library.editItem(item0); // soluce Molang
+        an.getDocumentDOM().exitEditMode();
+        //tl2.currentFrame = 0; // select the first frame
         //tl2.setSelectedFrames(0, 0);
     }
 }
 
 function LaySelectedToGuide() { //turn the selected layers as guide
     var layers = tl.layers;
-    var length2 = layers.length;
+    var length = layers.length;
 
-    for (i = 0; i < length2; i++) { // We restore the layer types
+    for (i = 0; i < length; i++) { // We restore the layer types
         layer = layers[i];
         originalTypes[i] = layer.layerType;
         originalParents[i] = layer.parentLayer;
@@ -66,6 +65,7 @@ function LaySelectedToGuide() { //turn the selected layers as guide
 }
 
 function SwapSymbols() { // Swap the new symbol on all the keys on the new layer
+    var tl2 = doc.getTimeline();
     var curLayer = tl2.currentLayer;
     var frameArray = tl2.layers[curLayer].frames;
     var tlLength = frameArray.length;
@@ -95,30 +95,23 @@ function SwapSymbols() { // Swap the new symbol on all the keys on the new layer
     }
 }
 
-function LayToNormal() { // put back the guided layers as normal
-    var tl3 = doc.getTimeline();
-    var numLayer = tl3.layerCount;
-    var layers = tl3.layers;
-
-    var layers = tl3.layers;
+function OnlyOls() {
+    var layers = doc.getTimeline().layers;
     var length2 = layers.length;
+    //an.trace(length2);
+    for (i = 0; i < length2; i++) {
+        var currentLayer = layers[i];
+        doc.getTimeline().layers[i].layerType = "normal";
+        if ((layToDelete.indexOf(i) !== -1)) {
+            doc.getTimeline().setSelectedLayers(i, false);
 
-    for (i = 0; i < length2; i++) { // We restore the layer types
-        layer = layers[i];
+        } else {
 
-	//	if (layer.layerType !== "folder") {
-        layer.layerType = originalTypes[i];
-        layer.parentLayer = originalParents[i];
-		//}
-	}
-}
-
-function DeleteNonOl() { // delete the non OL layers in the new symbol
-			//doc.getTimeline().setSelectedLayers(selLayers[0], true); // bugfix so nothing is selected before the loop
-    if (selLayers.length !== numLayer) { // bugfix if all layers selected
-        for each(var k in layToDelete) {
-            doc.getTimeline().setSelectedLayers(k, false);
+            //an.trace(i);
+            currentLayer.layerType = originalTypes[i];
+            currentLayer.parentLayer = originalParents[i];
         }
-        doc.getTimeline().deleteLayer();
+
     }
+    doc.getTimeline().deleteLayer();
 }
