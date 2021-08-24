@@ -1,61 +1,50 @@
-/*ST_layersToOl v0.9 - Simon Thery - 2021
+/*ST_layersToOl v1 - Simon Thery - 2021
 Nest the selected layers in a symbol over the ongoing symbol */
 
-an.outputPanel.clear();
+//an.outputPanel.clear();
 var doc = an.getDocumentDOM();
-var tl = doc.getTimeline();
-// var item0 = tl.libraryItem.name; --> soluce Molang
 var symbolName = prompt("Symbol name"); // Ask for a graphic name for the new symbol / layer
 
 if (symbolName != null) { // Abort if cancel or no name provided
     if (doc.library.itemExists(symbolName)) { // check if the symbol name already exists
         alert('This symbol already exists, please chose another name')
     } else {
+		var tl = doc.getTimeline();
+		var originalItem = tl.libraryItem.name
         var selLayers = tl.getSelectedLayers();
-        var numLayer = tl.layerCount;
         var originalTypes = new Array();
         var originalParents = new Array();
-
         LaySelectedToGuide();
         doc.exitEditMode();
-
-        var tl2 = doc.getTimeline(); // go in the previous timeline
-
-        tl2.duplicateLayers(); // duplicate the current layer
-        tl2.setLayerProperty("name", symbolName) // change the layer name
+        doc.getTimeline().duplicateLayers(); // duplicate the layer which contains the original symbol
+        doc.getTimeline().setLayerProperty("name", symbolName) // change the layer name
         doc.library.selectNone(); //bugfix if an item is already selected in the library
-		
-        var itemSelected = doc.selection[0].libraryItem; // select the symbol in the library
-        var selectName = itemSelected.name; // and get its name / path
-
-        doc.library.duplicateItem(selectName); // duplicate the symbol in the library
+        var selectName = doc.selection[0].libraryItem.name; // get the original symbol name / path
+        doc.library.duplicateItem(selectName); // duplicate the original symbol in the library
         doc.library.renameItem(symbolName); // Rename this new symbol
-		
         var libraryItemsSelected = doc.library.getSelectedItems();
-        var item2 = libraryItemsSelected[0].name;
-		
+        var copiedItem = libraryItemsSelected[0].name;
         SwapSymbols();
-        doc.library.editItem(item2); // enter in the new symbol
+        doc.library.editItem(copiedItem); // enter in the new symbol
         OnlyOls();
-		doc.getTimeline().deleteLayer();
-        // doc.library.editItem(item0); // soluce Molang
-        an.getDocumentDOM().exitEditMode();
-        //tl2.currentFrame = 0; // select the first frame
-        //tl2.setSelectedFrames(0, 0);
+        doc.getTimeline().deleteLayer(); // delete the non Ol layers
+        doc.library.editItem(originalItem); // come back inside the original symbol
+        doc.exitEditMode(); // to come back in the original timeline again
+        OldGoodTimeline(); /// the end is just to find the original timeline again if the original symbol is nested
+        var itemCheck = doc.selection[0].libraryItem.name;
+        if (itemCheck !== copiedItem) {
+            doc.enterEditMode();
+        }
     }
 }
 
 function LaySelectedToGuide() { //turn the selected layers as guide
-    var layers = tl.layers;
-    var length = layers.length;
-
-    for (i = 0; i < length; i++) { // We restore the layer types
-        layer = layers[i];
-        originalTypes[i] = layer.layerType;
-        originalParents[i] = layer.parentLayer;
-    }
-
-    for (i = 0; i < numLayer; i++) {
+    var layrs = tl.layers;
+    var layLength = layrs.length;
+    for (i = 0; i < layLength; i++) { // and store the layers types
+        layr = layrs[i];
+        originalTypes[i] = layr.layerType;
+        originalParents[i] = layr.parentLayer;
         if ((selLayers.indexOf(i) !== -1)) {
             tl.layers[i].layerType = "guide";
         }
@@ -63,50 +52,54 @@ function LaySelectedToGuide() { //turn the selected layers as guide
 }
 
 function SwapSymbols() { // Swap the new symbol on all the keys on the new layer
-    var tl2 = doc.getTimeline();
-    var curLayer = tl2.currentLayer;
-    var frameArray = tl2.layers[curLayer].frames;
+    var tl = doc.getTimeline();
+    var curLayer = tl.currentLayer;
+    var frameArray = tl.layers[curLayer].frames;
     var tlLength = frameArray.length;
     var currentKf;
-
     for (i = 0; i < tlLength; i++) {
         if (i == frameArray[i].startFrame) {
             currentKf = i;
         }
-        tl2.currentFrame = currentKf;
-        tl2.setSelectedFrames(currentKf, currentKf + 1);
+        tl.currentFrame = currentKf;
+        tl.setSelectedFrames(currentKf, currentKf + 1);
         doc.selection[0];
         if (doc.selection[0] !== undefined) {
-            doc.swapElement(item2);
-        }
-    }
-    for (i = 0; i < tlLength; i++) { // loop again to be sure not to be on a blank Kf
-        if (i == frameArray[i].startFrame) {
-            currentKf = i;
-        }
-        tl2.currentFrame = currentKf;
-        tl2.setSelectedFrames(currentKf, currentKf + 1);
-        doc.selection[0];
-        if (doc.selection[0] !== undefined) {
-            break;
+            doc.swapElement(copiedItem);
         }
     }
 }
 
-function OnlyOls() {
-    var layers = doc.getTimeline().layers;
-    var length2 = layers.length;
-    //an.trace(length2);
-    for (i = 0; i < length2; i++) {
-        var currentLayer = layers[i];
-		
-        doc.getTimeline().layers[i].layerType = "normal";
-		
+function OnlyOls() { // turn back the selected layers layertypes
+    var layrs = doc.getTimeline().layers;
+    var layLength = layrs.length;
+    for (i = 0; i < layLength; i++) {
+        var currentLayer = layrs[i];
+        currentLayer.layerType = "normal";
         if ((selLayers.indexOf(i) !== -1)) {
             currentLayer.layerType = originalTypes[i];
             currentLayer.parentLayer = originalParents[i];
         } else {
-			 doc.getTimeline().setSelectedLayers(i, false);
+            doc.getTimeline().setSelectedLayers(i, false); // and select the layers to be deleted
+        }
+    }
+}
+
+function OldGoodTimeline() {
+    var tl = doc.getTimeline();
+    var curLayer = tl.currentLayer;
+    var frameArray = tl.layers[curLayer].frames;
+    var tlLength = frameArray.length;
+    var currentKf;
+    for (i = 0; i < tlLength; i++) { // loop to avoid a blank kf
+        if (i == frameArray[i].startFrame) {
+            currentKf = i;
+        }
+        tl.currentFrame = currentKf;
+        tl.setSelectedFrames(currentKf, currentKf + 1);
+        doc.selection[0];
+        if (doc.selection[0] !== undefined) {
+            break;
         }
     }
 }
