@@ -12,6 +12,7 @@ if (symbolName != null) { // Abort if cancel or no name provided
 		var tl = doc.getTimeline();
 		var originalItem = tl.libraryItem.name
         var selLayers = tl.getSelectedLayers();
+		var delLayers = new Array();
         var originalTypes = new Array();
         var originalParents = new Array();
         LaySelectedToGuide();
@@ -47,7 +48,9 @@ function LaySelectedToGuide() { //turn the selected layers as guide
         originalParents[i] = layr.parentLayer;
         if ((selLayers.indexOf(i) !== -1)) {
             tl.layers[i].layerType = "guide";
-        }
+        }else{
+			delLayers.push(i); // get an array of the non selected layers
+		}
     }
 }
 
@@ -73,6 +76,7 @@ function SwapSymbols() { // Swap the new symbol on all the keys on the new layer
 function OnlyOls() { // turn back the selected layers layertypes
     var layrs = doc.getTimeline().layers;
     var layLength = layrs.length;
+	doc.getTimeline().setSelectedLayers(delLayers[0]); //bugfix to deselect all unwanted layers
     for (i = 0; i < layLength; i++) {
         var currentLayer = layrs[i];
         currentLayer.layerType = "normal";
