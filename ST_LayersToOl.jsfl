@@ -1,4 +1,4 @@
-/*ST_layersToOl v1 - Simon Thery - 2021
+/*ST_layersToOl v0.9 - Simon Thery - 2021
 Nest the selected layers in a symbol over the ongoing symbol */
 
 an.outputPanel.clear();
@@ -13,7 +13,6 @@ if (symbolName != null) { // Abort if cancel or no name provided
     } else {
         var selLayers = tl.getSelectedLayers();
         var numLayer = tl.layerCount;
-        var layToDelete = new Array;
         var originalTypes = new Array();
         var originalParents = new Array();
 
@@ -38,6 +37,7 @@ if (symbolName != null) { // Abort if cancel or no name provided
         SwapSymbols();
         doc.library.editItem(item2); // enter in the new symbol
         OnlyOls();
+		doc.getTimeline().deleteLayer();
         // doc.library.editItem(item0); // soluce Molang
         an.getDocumentDOM().exitEditMode();
         //tl2.currentFrame = 0; // select the first frame
@@ -58,8 +58,6 @@ function LaySelectedToGuide() { //turn the selected layers as guide
     for (i = 0; i < numLayer; i++) {
         if ((selLayers.indexOf(i) !== -1)) {
             tl.layers[i].layerType = "guide";
-        } else {
-            layToDelete.push(i); // Create an array of the non-selected layers
         }
     }
 }
@@ -101,17 +99,14 @@ function OnlyOls() {
     //an.trace(length2);
     for (i = 0; i < length2; i++) {
         var currentLayer = layers[i];
+		
         doc.getTimeline().layers[i].layerType = "normal";
-        if ((layToDelete.indexOf(i) !== -1)) {
-            doc.getTimeline().setSelectedLayers(i, false);
-
-        } else {
-
-            //an.trace(i);
+		
+        if ((selLayers.indexOf(i) !== -1)) {
             currentLayer.layerType = originalTypes[i];
             currentLayer.parentLayer = originalParents[i];
+        } else {
+			 doc.getTimeline().setSelectedLayers(i, false);
         }
-
     }
-    doc.getTimeline().deleteLayer();
 }
