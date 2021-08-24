@@ -76,7 +76,7 @@ function SwapSymbols() { // Swap the new symbol on all the keys on the new layer
 function OnlyOls() { // turn back the selected layers layertypes
     var layrs = doc.getTimeline().layers;
     var layLength = layrs.length;
-	doc.getTimeline().setSelectedLayers(delLayers[0]); //bugfix to deselect all unwanted layers
+	//doc.getTimeline().setSelectedLayers(delLayers[0]); //bugfix to deselect all unwanted layers
     for (i = 0; i < layLength; i++) {
         var currentLayer = layrs[i];
         currentLayer.layerType = "normal";
