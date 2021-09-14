@@ -1,5 +1,5 @@
-/* Simon Thery 2021
-   - select a shape and it make a reversed mask of it                                              */
+/*Simon Thery 2021
+Makes a reversed mask of the current selected shape*/
 
 var doc = an.getDocumentDOM();
 var tl = doc.getTimeline();
