@@ -23,3 +23,5 @@ Select a red and thin drawing brush (useful to trace shadows or posings.)
 
 ST_RtkLayer.jsfl -->
 A simple tool for animation supervisors. Create a blank layer and select a red brush to add retake notes.
+
+site : http://www.simonthery.fr
