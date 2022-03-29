@@ -9,7 +9,7 @@ var curLayer = tl.currentLayer;
 var curFrame = tl.currentFrame;
 
 	tl.addNewLayer("SbWhite");
-	doc.addNewRectangle({left:-192, top:-108, right:2104, bottom:1196}, 0, false, true);
+	doc.addNewRectangle({left:0, top:0, right:doc.width, bottom:doc.height}, 0, false, true);
 	
 //Sets the current layer as selected.
 
