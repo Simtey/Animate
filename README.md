@@ -1,5 +1,5 @@
 # Animate
-###Jsfl animation tools for Adobe Animate###
+### Jsfl animation tools for Adobe Animate ###
 
 **ST_FramesToGraphic.jsfl** -->
 * Transform the selected keyframes as a play once graphic symbol. You can as an option keep or replace the old keyframes.
