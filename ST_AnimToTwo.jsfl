@@ -14,17 +14,17 @@ for (var i = 0; i < tl.layerCount; i++) {
 		tl.layers[i].locked = true // lock everything
 	}
 }
+tl.convertToKeyframes(); // puts keyframe on all the selected frames
 for (var i = firstSelLay; i < lastSelLay + 1; i++) { // loop on each selected layer
 	if (tl.layers[i].layerType !== 'folder') {
 		var stFrame = tl.layers[i].frames[lastSelFrame].startFrame;
 		tl.setSelectedLayers(i);
-		tl.layers[i].locked = false;
+		tl.layers[i].locked = false; // delock the layer to work on it
 		if (lastSelFrame == stFrame + 1) { // if the last selected frame is a Key
 			tl.setSelectedFrames(firstSelFrame, lastSelFrame);
 		} else {
 			tl.setSelectedFrames(firstSelFrame, lastSelFrame + 1);
 		}
-		tl.convertToKeyframes(); // puts keyframe on all the selected frames
 		tl.setSelectedFrames(firstSelFrame, lastSelFrame);
 		tl.setFrameProperty('tweenType', 'none'); // delete the motion tweens
 		for (var k = firstSelFrame + 1; k < lastSelFrame; k = k + 2) {
