@@ -1,5 +1,5 @@
 /* ST_breakTo2 --> breaks the animation at a pace of 2 */
-//TO DO si nombre impair selectionné --> ne pas mettre la last Kf en lecture image unique.
+//TO DO --> essayer de rendre ça moins lourd
 //an.outputPanel.clear();
 var doc = an.getDocumentDOM();
 var tl = doc.getTimeline();
@@ -24,8 +24,8 @@ for (var i = firstSelLay; i < lastSelLay + 1; i++) { // loop on each selected la
          }
          tl.setSelectedLayers(i);
          tl.layers[i].locked = false; // delock the layer to work on it
-         if (lastSelFrame === lastKeyFrame + 1 || lastSelFrame === tl.frameCount) { // if the last selected frame is a Key
-             tl.setSelectedFrames(firstSelFrame, lastSelFrame);
+         if (lastSelFrame === lastKeyFrame + 1 || lastSelFrame === tl.frameCount) { // if the last selected frame is a Key or the last key is selected
+             tl.setSelectedFrames(firstSelFrame, lastSelFrame); // not to delete the motion tween on it
          } else {
              tl.setSelectedFrames(firstSelFrame, lastSelFrame + 1);
          }
@@ -33,6 +33,9 @@ for (var i = firstSelLay; i < lastSelLay + 1; i++) { // loop on each selected la
          for (var k = firstSelFrame + 1; k < lastSelFrame; k = k + 2) {
              tl.setSelectedFrames(k, k);
              tl.clearKeyframes(); // delete one frame on 2
+			 if(tl.layers[i].frames[lastSelFrame -1].startFrame !== lastSelFrame){ // if an odd number of frame selected don't change the loop style of the last kf
+				tl.setSelectedFrames(firstSelFrame, lastSelFrame -2);
+			 }
              doc.selectAll();
              doc.setElementProperty('loop', 'single frame'); // set the element on single frame
          }
