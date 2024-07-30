@@ -1,0 +1,7 @@
+<dialog buttons="accept, cancel" title="Number layers">
+
+	<radiogroup id="choiceRename"/>
+		<radio label="Number selected layers" selected = "true" />
+		<radio label="Number All" />
+	</radiogroup>
+</dialog>
