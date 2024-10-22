@@ -11,32 +11,32 @@ if (tl.getSelectedLayers().length !== 1 || doc.selection[0] === undefined || doc
 	alert("Please select a graphic (only one)")
 } else {
 	var layerSelected = parseInt(tl.getSelectedLayers());
-	var layerSelectedName = tl.layers[layerSelected].name;
+	var layerSelectedName = tl.layers[layerSelected].name; // gets the name of the selected layer
 	doc.enterEditMode('inPlace');
 
-	checkShadow();
+	checkShadow(); // check inside the selected graphic if there is a layer Named "SHADOW" in it.
 
 	tl.duplicateLayers();
-	tl.setLayerProperty("name", layerSelectedName + "_Shadow") // change the layer name
+	tl.setLayerProperty("name", layerSelectedName + "_Shadow") // change the duplicated layer name
 	lib.selectNone(); //bugfix if an item is already selected in the library
 	var selectName = doc.selection[0].libraryItem.name; // get the original symbol name / path
 	var copiedSymbolName = selectName.split("/")
-	var ShadowSymbolName = copiedSymbolName[1] + "_Shadow";
+	var ShadowSymbolName = copiedSymbolName[1] + "_Shadow"; // the new name for the duplicated symbol
 	if (lib.itemExists(selectName + "_Shadow") == true) { // if the symbol already exists
 		alert("The symbol " + ShadowSymbolName + " already exists, please choose another name")
-		ShadowSymbolName = prompt(ShadowSymbolName + "_copy");
+		ShadowSymbolName = prompt("New shadow Symbol name");
 	}
 	lib.duplicateItem(selectName); // duplicate the original symbol in the library
 	lib.renameItem(ShadowSymbolName); // Rename this new symbol
 	var libraryItemsSelected = doc.library.getSelectedItems();
 	var copiedItem = libraryItemsSelected[0].name;
 
-	SwapSymbols();
+	SwapSymbols(); // swap the old graphic with the new one (shadow) on each keyframe on the new layer.
 
-	tl.reorderLayer(layerSelected + 1, layerSelected);
+	tl.reorderLayer(layerSelected + 1, layerSelected); // move the shadow layer under the character symbol
 	lib.editItem(copiedItem); // enter the new symbol
 
-	deleteNonShadow();
+	nonShadowToGuide(); // turn all the layers with a different name than "SHADOW" to guides
 	doc.library.editItem(originalItem);
 }
 
@@ -71,7 +71,7 @@ function SwapSymbols() { // Swap the new symbol on all the keys on the new layer
 	}
 }
 
-function deleteNonShadow() {
+function nonShadowToGuide() {
 	var tl3 = doc.getTimeline();
 	var layrs = tl3.layers;
 	var layLength = layrs.length;
