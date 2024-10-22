@@ -19,14 +19,22 @@ if (userChoices.dismiss === "accept") {
 
 function renameAll() {
 	for (var i = 0; i < tl.layerCount; i++) {
-		tl.layers[i].name = i + 1 + "_" + tl.layers[i].name;
+		if (i < 9) {
+			tl.layers[i].name = "_" + 0 + (i + 1) + "_" + tl.layers[i].name;
+		} else {
+			tl.layers[i].name = "_" + (i + 1) + "_" + tl.layers[i].name;
+		}
 	}
 }
 
 function renameSelection() {
 	var k = 1;
 	for (var i = firstSelLay; i <= lastSelLay; i++) {
-		tl.layers[i].name = k + "_" + tl.layers[i].name;
+		if (k < 10) {
+			tl.layers[i].name = "_" + "0" + k + "_" + tl.layers[i].name;
+		} else {
+			tl.layers[i].name = "_" + k + "_" + tl.layers[i].name;
+		}
 		k++
 	}
 }
