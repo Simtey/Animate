@@ -14,7 +14,7 @@ if (tl.getSelectedLayers().length !== 1 || doc.selection[0] === undefined || doc
 	var layerSelectedName = tl.layers[layerSelected].name; // gets the name of the selected layer
 	doc.enterEditMode('inPlace');
 
-	checkShadow(); // check inside the selected graphic if there is a layer Named "SHADOW" in it.
+	checkShadow(); // check inside the selected graphic if there is at least one layer Named "SHADOW" in it.
 
 	tl.duplicateLayers();
 	tl.setLayerProperty("name", layerSelectedName + "_Shadow") // change the duplicated layer name
@@ -43,7 +43,7 @@ if (tl.getSelectedLayers().length !== 1 || doc.selection[0] === undefined || doc
 function checkShadow() {
 	var tl2 = doc.getTimeline();
 	var layerShadow = tl2.findLayerIndex("SHADOW"); // Inside the main anim graphic we seek for the layer "SHADOW"
-	if (layerShadow === undefined || layerShadow === null || layerShadow.length !== 1) { // If it does'nt exist | more of 1 layer "SHADOW" we abort
+	if (layerShadow === undefined || layerShadow === null) { // If it does'nt exist | more of 1 layer "SHADOW" we abort
 		doc.exitEditMode();
 		alert('Layer named SHADOW is missing or too many of with this name inside the animation graphic !');
 		return;
