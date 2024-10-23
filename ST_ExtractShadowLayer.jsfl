@@ -2,7 +2,11 @@
 - If there is a shadow layer inside a graphic it Exports this shadow layer under the selected layer.
  */
 
-an.outputPanel.clear();
+//an.outputPanel.clear();
+
+//-------------------------------------------------
+var layToKeepName = "SHADOW";  // change by wathever layer name you want to keep.
+//-------------------------------------------------
 var doc = an.getDocumentDOM();
 var tl = doc.getTimeline();
 var originalItem = tl.libraryItem.name;
@@ -14,8 +18,8 @@ if (tl.getSelectedLayers().length !== 1 || doc.selection[0] === undefined || doc
 	var layerSelectedName = tl.layers[layerSelected].name; // gets the name of the selected layer
 	doc.enterEditMode('inPlace');
 
-	checkShadow(); // check inside the selected graphic if there is at least one layer Named "SHADOW" in it.
-
+	if (checkShadow() === true ){// check inside the selected graphic if there is at least one layer Named "SHADOW" in it.
+	
 	tl.duplicateLayers();
 	tl.setLayerProperty("name", layerSelectedName + "_Shadow") // change the duplicated layer name
 	lib.selectNone(); //bugfix if an item is already selected in the library
@@ -38,17 +42,19 @@ if (tl.getSelectedLayers().length !== 1 || doc.selection[0] === undefined || doc
 
 	nonShadowToGuide(); // turn all the layers with a different name than "SHADOW" to guides
 	doc.library.editItem(originalItem);
+	} 
 }
 
 function checkShadow() {
 	var tl2 = doc.getTimeline();
-	var layerShadow = tl2.findLayerIndex("SHADOW"); // Inside the main anim graphic we seek for the layer "SHADOW"
+	var layerShadow = tl2.findLayerIndex(layToKeepName); // Inside the main anim graphic we seek for the layer "SHADOW"
 	if (layerShadow === undefined || layerShadow === null) { // If it does'nt exist | more of 1 layer "SHADOW" we abort
 		doc.exitEditMode();
-		alert('Layer named SHADOW is missing or too many of with this name inside the animation graphic !');
-		return;
+		alert("Layer named " + layToKeepName +" is missing or too many of with this name inside the animation graphic !");
+		return false;
 	} else {
 		doc.exitEditMode();
+		return true;
 	}
 }
 
@@ -77,7 +83,7 @@ function nonShadowToGuide() {
 	var layLength = layrs.length;
 	for (i = 0; i < layLength; i++) {
 		var layr = layrs[i];
-		if (layr.name != "SHADOW") {
+		if (layr.name != layToKeepName) {
 			tl3.layers[i].layerType = "guide";
 		} else {
 			tl3.layers[i].layerType = "normal";
