@@ -1,7 +1,7 @@
 /*ST_SelectColumn --> selects a column of key corresponding to the selection and avoid the 1st and last layer corresponding some condition (here layers names animaitique or audio for example)
 This script avoid the problem of manipulating the keys due to the folders*/
 
-// an.outputPanel.clear()
+//an.outputPanel.clear()
 var doc = an.getDocumentDOM();
 var tl = doc.getTimeline();
 var selFrames = tl.getSelectedFrames();
@@ -10,12 +10,10 @@ var firstSelFrame = parseInt(selFrames.slice(1, 2));
 var lastSelFrame = parseInt(selFrames.slice(-1));
 var newSelection = [];
 var value = true;
-
 if (selFrames[0] === undefined) {
 	firstSelFrame = currentFrame;
 	lastSelFrame = currentFrame + 1;
 }
-
 for (i = 0; i < tl.layerCount; i++) {
 	if (i === 0 || i === 1 && value === true) { // the value permit to avoid to unselect the second layer if the 1st is selected (in this case we can't manipulate the key selection once selected)
 		if (tl.layers[i].layerType !== "folder") {
@@ -32,7 +30,7 @@ for (i = 0; i < tl.layerCount; i++) {
 			newSelection.push(i, firstSelFrame, lastSelFrame);
 		}
 	} else if (i === tl.layerCount - 1) { // if it is the last layer
-		if (tl.layers[i].frames[lastSelFrame].soundLibraryItem === null) { // we check it is not an audio
+		if (tl.layers[i].frames[firstSelFrame].soundLibraryItem === null) { // we check it is not an audio
 			newSelection.push(i, firstSelFrame, lastSelFrame); // in this case we register it
 		}
 	} else { // we register all the other layers.
